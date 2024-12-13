@@ -2,39 +2,46 @@ package controllers;
 
 import dao.SalesContractDAO;
 import model.SalesContract;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/sales-contracts")
+@RequestMapping("/api/salescontracts")
 public class SalesContractController {
 
     private final SalesContractDAO salesContractDAO;
 
+    @Autowired
     public SalesContractController(SalesContractDAO salesContractDAO) {
         this.salesContractDAO = salesContractDAO;
     }
 
-    @GetMapping("/{id}")
-    public SalesContract findById(@PathVariable("id") int id) {
-        return salesContractDAO.findSalesContractById(id);
-    }
-
+    // Get all sales contracts
     @GetMapping
-    public List<SalesContract> findAll() {
+    public List<SalesContract> getAllSalesContracts() {
         return salesContractDAO.findAllSalesContracts();
     }
 
+    // Get a sales contract by ID
+    @GetMapping("/{id}")
+    public SalesContract getSalesContractById(@PathVariable int id) {
+        return salesContractDAO.findSalesContractById(id);
+    }
+
+    // Add a new sales contract
     @PostMapping
-    @ResponseStatus(code = HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.CREATED)
     public void addSalesContract(@RequestBody SalesContract salesContract) {
         salesContractDAO.addSalesContract(salesContract);
     }
 
+    // Delete a sales contract by ID
     @DeleteMapping("/{id}")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void deleteSalesContract(@PathVariable("id") int id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSalesContract(@PathVariable int id) {
         salesContractDAO.removeSalesContract(id);
     }
 }
