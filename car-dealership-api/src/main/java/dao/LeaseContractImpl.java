@@ -2,11 +2,13 @@ package dao;
 
 import model.LeaseContract;
 import model.Vehicle;
+import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class LeaseContractImpl implements LeaseContractDAO {
     private final DataSource dataSource;
 

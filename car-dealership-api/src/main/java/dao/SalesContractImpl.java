@@ -3,7 +3,7 @@ package dao;
 import model.SalesContract;
 import model.Vehicle;
 import org.apache.commons.dbcp2.BasicDataSource;
-
+import org.springframework.stereotype.Component;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class SalesContractImpl implements SalesContractDAO {
 
     private final BasicDataSource dataSource;

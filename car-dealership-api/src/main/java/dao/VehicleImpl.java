@@ -1,11 +1,16 @@
 package dao;
 
 import model.Vehicle;
+import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class VehicleImpl implements VehicleDAO {
     private final DataSource dataSource;
 

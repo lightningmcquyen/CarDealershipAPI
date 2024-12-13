@@ -2,11 +2,12 @@ package dao;
 
 import model.Dealership;
 import org.apache.commons.dbcp2.BasicDataSource;
-
+import org.springframework.stereotype.Component;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class DealershipImpl implements DealershipDAO {
 
     private final BasicDataSource dataSource;
