@@ -201,4 +201,32 @@ public class VehicleImpl implements VehicleDAO {
         boolean sold = rs.getBoolean("sold");
         return new Vehicle(vin, year, make, model, vehicleType, color, odometer, price, sold);
     }
+
+    @Override
+    public void updateVehicle(int vin, Vehicle updatedVehicle) {
+        String query = """
+            UPDATE vehicles 
+            SET year = ?, make = ?, model = ?, vehicleType = ?, color = ?, odometer = ?, price = ?, sold = ? 
+            WHERE vin = ?
+            """;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
+
+            ps.setInt(1, updatedVehicle.getYear());
+            ps.setString(2, updatedVehicle.getMake());
+            ps.setString(3, updatedVehicle.getModel());
+            ps.setString(4, updatedVehicle.getVehicleType());
+            ps.setString(5, updatedVehicle.getColor());
+            ps.setInt(6, updatedVehicle.getOdometer());
+            ps.setDouble(7, updatedVehicle.getPrice());
+            ps.setBoolean(8, updatedVehicle.isSold());
+            ps.setInt(9, vin);
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating vehicle with VIN: " + vin, e);
+        }
+    }
+
 }

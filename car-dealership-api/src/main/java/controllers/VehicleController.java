@@ -19,16 +19,37 @@ public class VehicleController {
         this.vehicleDAO = vehicleDAO;
     }
 
-    // Get all vehicles
+    // Get vehicles with query string filtering
     @GetMapping
-    public List<Vehicle> getAllVehicles() {
-        return vehicleDAO.findAllVehicles();
-    }
+    public List<Vehicle> getVehicles(
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String make,
+            @RequestParam(required = false) String model,
+            @RequestParam(required = false) Integer minYear,
+            @RequestParam(required = false) Integer maxYear,
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) Integer minMiles,
+            @RequestParam(required = false) Integer maxMiles,
+            @RequestParam(required = false) String type) {
 
-    // Get a vehicle by VIN
-    @GetMapping("/{vin}")
-    public Vehicle getVehicleByVin(@PathVariable int vin) {
-        return vehicleDAO.findVehicleByVin(vin);
+        // Handle different query parameters
+        if (minPrice != null && maxPrice != null) {
+            return vehicleDAO.findVehicleByPriceRange(minPrice, maxPrice);
+        } else if (make != null && model != null) {
+            return vehicleDAO.findVehicleByMakeModel(make, model);
+        } else if (minYear != null && maxYear != null) {
+            return vehicleDAO.findVehicleByYear(minYear, maxYear);
+        } else if (color != null) {
+            return vehicleDAO.findVehicleByColor(color);
+        } else if (minMiles != null && maxMiles != null) {
+            return vehicleDAO.findVehicleByMileage(minMiles, maxMiles);
+        } else if (type != null) {
+            return vehicleDAO.findVehicleByType(type);
+        }
+
+        // Default: return all vehicles
+        return vehicleDAO.findAllVehicles();
     }
 
     // Add a new vehicle
@@ -38,7 +59,20 @@ public class VehicleController {
         vehicleDAO.addVehicle(vehicle);
     }
 
-    // Delete a vehicle by VIN
+    // Update a vehicle
+    @PutMapping("/{vin}")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateVehicle(@PathVariable int vin, @RequestBody Vehicle updatedVehicle) {
+        Vehicle existingVehicle = vehicleDAO.findVehicleByVin(vin);
+
+        if (existingVehicle != null) {
+            vehicleDAO.updateVehicle(vin, updatedVehicle); // Update the vehicle in DAO
+        } else {
+            throw new RuntimeException("Vehicle with VIN " + vin + " not found.");
+        }
+    }
+
+    // Delete a vehicle
     @DeleteMapping("/{vin}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteVehicle(@PathVariable int vin) {
