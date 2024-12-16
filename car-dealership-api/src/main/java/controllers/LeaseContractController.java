@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/leasecontracts")
+@RequestMapping("/api/lease-contracts")
 public class LeaseContractController {
 
     private final LeaseContractDAO leaseContractDAO;
@@ -19,29 +17,17 @@ public class LeaseContractController {
         this.leaseContractDAO = leaseContractDAO;
     }
 
-    // Get all lease contracts
-    @GetMapping
-    public List<LeaseContract> getAllLeaseContracts() {
-        return leaseContractDAO.findAllLeaseContracts();
-    }
-
-    // Get a lease contract by ID
+    // GET: Retrieve a lease contract by ID
     @GetMapping("/{id}")
     public LeaseContract getLeaseContractById(@PathVariable int id) {
         return leaseContractDAO.findLeaseContractById(id);
     }
 
-    // Add a new lease contract
+    // POST: Add a new lease contract
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addLeaseContract(@RequestBody LeaseContract leaseContract) {
+    public LeaseContract addLeaseContract(@RequestBody LeaseContract leaseContract) {
         leaseContractDAO.addLeaseContract(leaseContract);
-    }
-
-    // Delete a lease contract by ID
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteLeaseContract(@PathVariable int id) {
-        leaseContractDAO.removeLeaseContract(id);
+        return leaseContract;
     }
 }

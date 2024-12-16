@@ -5,6 +5,7 @@ import model.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -19,63 +20,78 @@ public class VehicleController {
         this.vehicleDAO = vehicleDAO;
     }
 
-    // Get vehicles with query string filtering
+    // GET: Retrieve vehicles by price range
+    @GetMapping("/by-price")
+    public List<Vehicle> findByPriceRange(@RequestParam double minPrice, @RequestParam double maxPrice) {
+        return vehicleDAO.findVehicleByPriceRange(minPrice, maxPrice);
+    }
+
+    // GET: Retrieve vehicles by make and model
+    @GetMapping("/by-make-model")
+    public List<Vehicle> findByMakeAndModel(@RequestParam String make, @RequestParam String model) {
+        return vehicleDAO.findVehicleByMakeModel(make, model);
+    }
+
+    // GET: Retrieve vehicles by year range
+    @GetMapping("/by-year")
+    public List<Vehicle> findByYearRange(@RequestParam int minYear, @RequestParam int maxYear) {
+        return vehicleDAO.findVehicleByYear(minYear, maxYear);
+    }
+
+    // GET: Retrieve vehicles by color
+    @GetMapping("/by-color")
+    public List<Vehicle> findByColor(@RequestParam String color) {
+        return vehicleDAO.findVehicleByColor(color);
+    }
+
+    // GET: Retrieve vehicles by mileage range
+    @GetMapping("/by-mileage")
+    public List<Vehicle> findByMileageRange(@RequestParam int minMiles, @RequestParam int maxMiles) {
+        return vehicleDAO.findVehicleByMileage(minMiles, maxMiles);
+    }
+
+    // GET: Retrieve vehicles by type
+    @GetMapping("/by-type")
+    public List<Vehicle> findByType(@RequestParam String type) {
+        return vehicleDAO.findVehicleByType(type);
+    }
+
+    // GET: Retrieve all vehicles
     @GetMapping
-    public List<Vehicle> getVehicles(
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) String make,
-            @RequestParam(required = false) String model,
-            @RequestParam(required = false) Integer minYear,
-            @RequestParam(required = false) Integer maxYear,
-            @RequestParam(required = false) String color,
-            @RequestParam(required = false) Integer minMiles,
-            @RequestParam(required = false) Integer maxMiles,
-            @RequestParam(required = false) String type) {
-
-        // Handle different query parameters
-        if (minPrice != null && maxPrice != null) {
-            return vehicleDAO.findVehicleByPriceRange(minPrice, maxPrice);
-        } else if (make != null && model != null) {
-            return vehicleDAO.findVehicleByMakeModel(make, model);
-        } else if (minYear != null && maxYear != null) {
-            return vehicleDAO.findVehicleByYear(minYear, maxYear);
-        } else if (color != null) {
-            return vehicleDAO.findVehicleByColor(color);
-        } else if (minMiles != null && maxMiles != null) {
-            return vehicleDAO.findVehicleByMileage(minMiles, maxMiles);
-        } else if (type != null) {
-            return vehicleDAO.findVehicleByType(type);
-        }
-
-        // Default: return all vehicles
+    public List<Vehicle> findAllVehicles() {
         return vehicleDAO.findAllVehicles();
     }
 
-    // Add a new vehicle
+    // POST: Add a new vehicle
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addVehicle(@RequestBody Vehicle vehicle) {
+    public Vehicle addVehicle(@RequestBody Vehicle vehicle) {
         vehicleDAO.addVehicle(vehicle);
+        return vehicle;
     }
 
-    // Update a vehicle
+    // PUT: Update an existing vehicle
     @PutMapping("/{vin}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateVehicle(@PathVariable int vin, @RequestBody Vehicle updatedVehicle) {
+    public Vehicle updateVehicle(@PathVariable int vin, @RequestBody Vehicle updatedVehicle) {
         Vehicle existingVehicle = vehicleDAO.findVehicleByVin(vin);
-
-        if (existingVehicle != null) {
-            vehicleDAO.updateVehicle(vin, updatedVehicle); // Update the vehicle in DAO
-        } else {
-            throw new RuntimeException("Vehicle with VIN " + vin + " not found.");
+        if (existingVehicle == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle with VIN " + vin + " not found.");
         }
+
+        // Update the vehicle data
+        vehicleDAO.updateVehicle(vin, updatedVehicle);
+        return updatedVehicle;
     }
 
-    // Delete a vehicle
+
+    // DELETE: Remove a vehicle by VIN
     @DeleteMapping("/{vin}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteVehicle(@PathVariable int vin) {
-        vehicleDAO.removeVehicle(vin);
+        boolean removed = vehicleDAO.removeVehicle(vin);
+        if (!removed) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle with VIN " + vin + " not found.");
+        }
     }
 }

@@ -1,12 +1,10 @@
 package dao;
 
 import model.Vehicle;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +12,24 @@ import java.util.List;
 public class VehicleImpl implements VehicleDAO {
     private final DataSource dataSource;
 
+    @Autowired
     public VehicleImpl(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    // Helper method to map ResultSet to a Vehicle object
+    private Vehicle mapRowToVehicle(ResultSet rs) throws SQLException {
+        return new Vehicle(
+                rs.getInt("vin"),
+                rs.getInt("year"),
+                rs.getString("make"),
+                rs.getString("model"),
+                rs.getString("vehicleType"),
+                rs.getString("color"),
+                rs.getInt("odometer"),
+                rs.getDouble("price"),
+                rs.getBoolean("sold")
+        );
     }
 
     @Override
@@ -28,10 +42,10 @@ public class VehicleImpl implements VehicleDAO {
             ps.setDouble(2, maxPrice);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                vehicles.add(createVehicleFromResultSet(rs));
+                vehicles.add(mapRowToVehicle(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error finding vehicles by price range", e);
+            throw new RuntimeException("Error retrieving vehicles by price range.", e);
         }
         return vehicles;
     }
@@ -46,10 +60,10 @@ public class VehicleImpl implements VehicleDAO {
             ps.setString(2, model);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                vehicles.add(createVehicleFromResultSet(rs));
+                vehicles.add(mapRowToVehicle(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error finding vehicles by make and model", e);
+            throw new RuntimeException("Error retrieving vehicles by make and model.", e);
         }
         return vehicles;
     }
@@ -64,10 +78,10 @@ public class VehicleImpl implements VehicleDAO {
             ps.setInt(2, maxYear);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                vehicles.add(createVehicleFromResultSet(rs));
+                vehicles.add(mapRowToVehicle(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error finding vehicles by year range", e);
+            throw new RuntimeException("Error retrieving vehicles by year range.", e);
         }
         return vehicles;
     }
@@ -81,45 +95,45 @@ public class VehicleImpl implements VehicleDAO {
             ps.setString(1, color);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                vehicles.add(createVehicleFromResultSet(rs));
+                vehicles.add(mapRowToVehicle(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error finding vehicles by color", e);
+            throw new RuntimeException("Error retrieving vehicles by color.", e);
         }
         return vehicles;
     }
 
     @Override
-    public List<Vehicle> findVehicleByMileage(int minMileage, int maxMileage) {
+    public List<Vehicle> findVehicleByMileage(int minMiles, int maxMiles) {
         List<Vehicle> vehicles = new ArrayList<>();
         String query = "SELECT * FROM vehicles WHERE odometer BETWEEN ? AND ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, minMileage);
-            ps.setInt(2, maxMileage);
+            ps.setInt(1, minMiles);
+            ps.setInt(2, maxMiles);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                vehicles.add(createVehicleFromResultSet(rs));
+                vehicles.add(mapRowToVehicle(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error finding vehicles by mileage range", e);
+            throw new RuntimeException("Error retrieving vehicles by mileage.", e);
         }
         return vehicles;
     }
 
     @Override
-    public List<Vehicle> findVehicleByType(String vehicleType) {
+    public List<Vehicle> findVehicleByType(String type) {
         List<Vehicle> vehicles = new ArrayList<>();
         String query = "SELECT * FROM vehicles WHERE vehicleType = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, vehicleType);
+            ps.setString(1, type);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                vehicles.add(createVehicleFromResultSet(rs));
+                vehicles.add(mapRowToVehicle(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error finding vehicles by type", e);
+            throw new RuntimeException("Error retrieving vehicles by type.", e);
         }
         return vehicles;
     }
@@ -140,73 +154,15 @@ public class VehicleImpl implements VehicleDAO {
             ps.setBoolean(9, vehicle.isSold());
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error adding vehicle", e);
+            throw new RuntimeException("Error adding vehicle.", e);
         }
-    }
-
-    @Override
-    public boolean removeVehicle(int vin) {
-        String query = "DELETE FROM vehicles WHERE vin = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, vin);
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            throw new RuntimeException("Error removing vehicle", e);
-        }
-    }
-
-    @Override
-    public List<Vehicle> findAllVehicles() {
-        List<Vehicle> vehicles = new ArrayList<>();
-        String query = "SELECT * FROM vehicles";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                vehicles.add(createVehicleFromResultSet(rs));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error finding all vehicles", e);
-        }
-        return vehicles;
-    }
-
-    @Override
-    public Vehicle findVehicleByVin(int vin) {
-        String query = "SELECT * FROM vehicles WHERE vin = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, vin);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return createVehicleFromResultSet(rs);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error finding vehicle by VIN", e);
-        }
-        return null;
-    }
-
-    private Vehicle createVehicleFromResultSet(ResultSet rs) throws SQLException {
-        int vin = rs.getInt("vin");
-        int year = rs.getInt("year");
-        String make = rs.getString("make");
-        String model = rs.getString("model");
-        String vehicleType = rs.getString("vehicleType");
-        String color = rs.getString("color");
-        int odometer = rs.getInt("odometer");
-        double price = rs.getDouble("price");
-        boolean sold = rs.getBoolean("sold");
-        return new Vehicle(vin, year, make, model, vehicleType, color, odometer, price, sold);
     }
 
     @Override
     public void updateVehicle(int vin, Vehicle updatedVehicle) {
         String query = """
             UPDATE vehicles 
-            SET year = ?, make = ?, model = ?, vehicleType = ?, color = ?, odometer = ?, price = ?, sold = ? 
+            SET year = ?, make = ?, model = ?, vehicleType = ?, color = ?, odometer = ?, price = ?, sold = ?
             WHERE vin = ?
             """;
 
@@ -223,10 +179,57 @@ public class VehicleImpl implements VehicleDAO {
             ps.setBoolean(8, updatedVehicle.isSold());
             ps.setInt(9, vin);
 
-            ps.executeUpdate();
+            int rowsUpdated = ps.executeUpdate();
+            if (rowsUpdated == 0) {
+                throw new RuntimeException("No vehicle found with VIN: " + vin);
+            }
+
         } catch (SQLException e) {
             throw new RuntimeException("Error updating vehicle with VIN: " + vin, e);
         }
     }
 
+    @Override
+    public boolean removeVehicle(int vin) {
+        String query = "DELETE FROM vehicles WHERE vin = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, vin);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error removing vehicle.", e);
+        }
+    }
+
+    @Override
+    public List<Vehicle> findAllVehicles() {
+        List<Vehicle> vehicles = new ArrayList<>();
+        String query = "SELECT * FROM vehicles";
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery(query)) {
+            while (rs.next()) {
+                vehicles.add(mapRowToVehicle(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving all vehicles.", e);
+        }
+        return vehicles;
+    }
+
+    @Override
+    public Vehicle findVehicleByVin(int vin) {
+        String query = "SELECT * FROM vehicles WHERE vin = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, vin);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapRowToVehicle(rs);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving vehicle by VIN.", e);
+        }
+        return null;
+    }
 }

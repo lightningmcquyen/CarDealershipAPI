@@ -2,13 +2,11 @@ package dao;
 
 import model.LeaseContract;
 import model.Vehicle;
-import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public class LeaseContractImpl implements LeaseContractDAO {
     private final DataSource dataSource;
 
@@ -117,7 +115,7 @@ public class LeaseContractImpl implements LeaseContractDAO {
                 rs.getString("model"),
                 rs.getString("vehicleType"),
                 rs.getString("color"),
-                rs.getInt("odometer"),
+                rs.getInt("mileage"),
                 rs.getDouble("price"),
                 rs.getBoolean("sold")
         );

@@ -5,6 +5,7 @@ import model.Dealership;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -19,29 +20,33 @@ public class DealershipController {
         this.dealershipDAO = dealershipDAO;
     }
 
-    // Get all dealerships
+    // GET: Retrieve all dealerships
     @GetMapping
     public List<Dealership> getAllDealerships() {
         return dealershipDAO.findAllDealerships();
     }
 
-    // Get a dealership by ID
+    // GET: Retrieve a dealership by ID
     @GetMapping("/{id}")
     public Dealership getDealershipById(@PathVariable int id) {
         return dealershipDAO.findDealershipById(id);
     }
 
-    // Add a new dealership
+    // POST: Add a new dealership
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addDealership(@RequestBody Dealership dealership) {
+    public Dealership addDealership(@RequestBody Dealership dealership) {
         dealershipDAO.addDealership(dealership);
+        return dealership;
     }
 
-    // Delete a dealership by ID
+    // DELETE: Remove a dealership by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDealership(@PathVariable int id) {
-        dealershipDAO.removeDealership(id);
+        boolean removed = dealershipDAO.removeDealership(id);
+        if (!removed) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Dealership with ID " + id + " not found.");
+        }
     }
 }
