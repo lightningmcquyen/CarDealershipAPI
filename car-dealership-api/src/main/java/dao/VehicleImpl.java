@@ -222,14 +222,28 @@ public class VehicleImpl implements VehicleDAO {
         String query = "SELECT * FROM vehicles WHERE vin = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement(query)) {
+
             ps.setInt(1, vin);
             ResultSet rs = ps.executeQuery();
+
             if (rs.next()) {
-                return mapRowToVehicle(rs);
+                return new Vehicle(
+                        rs.getInt("vin"),
+                        rs.getInt("year"),
+                        rs.getString("make"),
+                        rs.getString("model"),
+                        rs.getString("vehicleType"),
+                        rs.getString("color"),
+                        rs.getInt("odometer"),
+                        rs.getDouble("price"),
+                        rs.getBoolean("sold")
+                );
+            } else {
+                throw new RuntimeException("Vehicle not found with VIN: " + vin);
             }
+
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving vehicle by VIN.", e);
+            throw new RuntimeException("Error finding vehicle with VIN: " + vin, e);
         }
-        return null;
     }
 }
