@@ -10,7 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-//@RequestMapping("/vehicles")
+@RequestMapping("/api")
 public class VehicleController {
 
     private final VehicleDAO vehicleDAO;
@@ -53,11 +53,13 @@ public class VehicleController {
     // GET: Retrieve vehicles by type
     @GetMapping("/by-type")
     public List<Vehicle> findByType(@RequestParam String type) {
+
         return vehicleDAO.findVehicleByType(type);
     }
 
     // GET: Retrieve all vehicles
-    @RequestMapping (path="/vehicles", method = RequestMethod.GET)
+//    @RequestMapping (path="/vehicles", method = RequestMethod.GET)
+    @GetMapping ("/vehicles")
     public List<Vehicle> findAllVehicles() {
 
         return vehicleDAO.findAllVehicles();

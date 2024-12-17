@@ -13,7 +13,7 @@ public interface VehicleDAO {
     List<Vehicle> findVehicleByType(String type);
 
     void addVehicle(Vehicle vehicle);
-    void updateVehicle(int vin, Vehicle updatedVehicle);
+    boolean updateVehicle(int vin, Vehicle updatedVehicle);
     boolean removeVehicle(int vin);
 
     List<Vehicle> findAllVehicles();
