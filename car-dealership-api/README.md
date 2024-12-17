@@ -24,6 +24,7 @@ This project is a RESTful API for managing a car dealership's inventory, sales c
 - **Apache Commons DBCP2** (Connection Pooling)
 - **Maven** (Dependency Management)
 - **Postman** (API Testing)
+  ![Postman Test](src/main/resources/postmanallvehicles.png)
 
 ---
 
