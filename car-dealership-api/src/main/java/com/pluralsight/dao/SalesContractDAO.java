@@ -1,6 +1,6 @@
-package dao;
+package com.pluralsight.dao;
 
-import model.SalesContract;
+import com.pluralsight.model.SalesContract;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package controllers;
+package com.pluralsight.controllers;
 
-import dao.VehicleDAO;
-import model.Vehicle;
+import com.pluralsight.dao.VehicleDAO;
+import com.pluralsight.model.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/vehicles")
+//@RequestMapping("/vehicles")
 public class VehicleController {
 
     private final VehicleDAO vehicleDAO;
@@ -57,8 +57,9 @@ public class VehicleController {
     }
 
     // GET: Retrieve all vehicles
-    @GetMapping
+    @RequestMapping (path="/vehicles", method = RequestMethod.GET)
     public List<Vehicle> findAllVehicles() {
+
         return vehicleDAO.findAllVehicles();
     }
 

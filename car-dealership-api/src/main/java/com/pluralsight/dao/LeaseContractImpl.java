@@ -1,12 +1,15 @@
-package dao;
+package com.pluralsight.dao;
 
-import model.LeaseContract;
-import model.Vehicle;
+import com.pluralsight.model.LeaseContract;
+import com.pluralsight.model.Vehicle;
+import org.springframework.stereotype.Component;
+
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class LeaseContractImpl implements LeaseContractDAO {
     private final DataSource dataSource;
 
@@ -112,7 +115,7 @@ public class LeaseContractImpl implements LeaseContractDAO {
                 vin,
                 rs.getInt("year"),
                 rs.getString("make"),
-                rs.getString("model"),
+                rs.getString("com/pluralsight"),
                 rs.getString("vehicleType"),
                 rs.getString("color"),
                 rs.getInt("mileage"),

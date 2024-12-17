@@ -1,6 +1,6 @@
-package dao;
+package com.pluralsight.dao;
 
-import model.Dealership;
+import com.pluralsight.model.Dealership;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.stereotype.Component;
 import java.sql.*;

@@ -1,7 +1,7 @@
-package controllers;
+package com.pluralsight.controllers;
 
-import dao.LeaseContractDAO;
-import model.LeaseContract;
+import com.pluralsight.dao.LeaseContractDAO;
+import com.pluralsight.model.LeaseContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

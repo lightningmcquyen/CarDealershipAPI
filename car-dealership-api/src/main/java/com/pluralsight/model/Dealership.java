@@ -1,4 +1,4 @@
-package model;
+package com.pluralsight.model;
 
 public class Dealership {
     private int id; // Unique identifier for the dealership

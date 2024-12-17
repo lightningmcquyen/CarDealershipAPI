@@ -1,7 +1,7 @@
-package dao;
+package com.pluralsight.dao;
 
-import model.SalesContract;
-import model.Vehicle;
+import com.pluralsight.model.SalesContract;
+import com.pluralsight.model.Vehicle;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.stereotype.Component;
 import java.sql.Connection;
@@ -35,7 +35,7 @@ public class SalesContractImpl implements SalesContractDAO {
                         rs.getInt("vin"),
                         rs.getInt("year"),
                         rs.getString("make"),
-                        rs.getString("model"),
+                        rs.getString("com/pluralsight"),
                         rs.getString("vehicleType"),
                         rs.getString("color"),
                         rs.getInt("odometer"),
@@ -83,7 +83,7 @@ public class SalesContractImpl implements SalesContractDAO {
                         rs.getInt("vin"),
                         rs.getInt("year"),
                         rs.getString("make"),
-                        rs.getString("model"),
+                        rs.getString("com/pluralsight"),
                         rs.getString("vehicleType"),
                         rs.getString("color"),
                         rs.getInt("odometer"),

@@ -1,4 +1,4 @@
-package model;
+package com.pluralsight.model;
 
 public abstract class Contract {
     private final String dateOfContract;

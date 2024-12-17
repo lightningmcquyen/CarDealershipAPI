@@ -1,6 +1,6 @@
-package dao;
+package com.pluralsight.dao;
 
-import model.LeaseContract;
+import com.pluralsight.model.LeaseContract;
 import java.util.List;
 
 public interface LeaseContractDAO {

@@ -1,6 +1,6 @@
-package dao;
+package com.pluralsight.dao;
 
-import model.Vehicle;
+import com.pluralsight.model.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
@@ -23,7 +23,7 @@ public class VehicleImpl implements VehicleDAO {
                 rs.getInt("vin"),
                 rs.getInt("year"),
                 rs.getString("make"),
-                rs.getString("model"),
+                rs.getString("com/pluralsight"),
                 rs.getString("vehicleType"),
                 rs.getString("color"),
                 rs.getInt("odometer"),
@@ -201,18 +201,31 @@ public class VehicleImpl implements VehicleDAO {
         }
     }
 
+//
+
     @Override
     public List<Vehicle> findAllVehicles() {
         List<Vehicle> vehicles = new ArrayList<>();
-        String query = "SELECT * FROM vehicles";
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet rs = statement.executeQuery(query)) {
-            while (rs.next()) {
-                vehicles.add(mapRowToVehicle(rs));
-            }
+        try(Connection connection = dataSource.getConnection()) {
+            PreparedStatement findAllVehicles = connection.prepareStatement(""" 
+                    SELECT VIN, Year, Make, Model, vehicleType, Color, Odometer, Price, Sold
+                    FROM vehicles                
+                    ORDER BY price;
+                    """);
+            ResultSet rs = findAllVehicles.executeQuery();
+            while(rs.next()) {
+                int vin = rs.getInt("VIN");
+                String make = rs.getString("Make");
+                String model = rs.getString("Model");
+                int year = rs.getInt("Year");
+                String color = rs.getString("Color");
+                int odometer = rs.getInt("Odometer");
+                double price = rs.getDouble("Price");
+                boolean sold = rs.getBoolean("Sold");
+                String vehicleType = rs.getString("vehicleType");
+                vehicles.add(new Vehicle(vin, year, make, model, vehicleType, color, odometer, price, sold));}
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving all vehicles.", e);
+            throw new RuntimeException(e);
         }
         return vehicles;
     }
@@ -231,7 +244,7 @@ public class VehicleImpl implements VehicleDAO {
                         rs.getInt("vin"),
                         rs.getInt("year"),
                         rs.getString("make"),
-                        rs.getString("model"),
+                        rs.getString("com/pluralsight"),
                         rs.getString("vehicleType"),
                         rs.getString("color"),
                         rs.getInt("odometer"),

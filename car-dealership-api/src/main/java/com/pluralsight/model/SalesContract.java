@@ -1,4 +1,4 @@
-package model;
+package com.pluralsight.model;
 
 public class SalesContract extends Contract {
     private final double originalPrice;

@@ -1,7 +1,7 @@
-package controllers;
+package com.pluralsight.controllers;
 
-import dao.DealershipDAO;
-import model.Dealership;
+import com.pluralsight.dao.DealershipDAO;
+import com.pluralsight.model.Dealership;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
